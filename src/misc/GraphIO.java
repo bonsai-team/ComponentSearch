@@ -116,10 +116,10 @@ public class GraphIO {
 			// Nodes
 			BufferedWriter bwv = new BufferedWriter(new FileWriter(nodeFile));
 			
-			bwv.write("Id;Label;Size;Species;ContigId\n");
+			bwv.write("Id;Size;Specie;ContigId\n");
 			for (Node n : graph.nodes.values()) {
 				MetaNode mn = (MetaNode)n;
-				bwv.write(n.id + ';' + n.species + ';' + mn.nodes.size() + ';' + mn.species + ';' + mn.contigId + '\n');
+				bwv.write(n.id + ';' + mn.nodes.size() + ';' + mn.species + ';' + mn.contigId + '\n');
 			}
 			
 			bwv.close();
