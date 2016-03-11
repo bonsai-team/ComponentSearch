@@ -133,7 +133,7 @@ public class GraphIO {
 				avgDegree += e.degree;
 			avgDegree /= graph.edges.size();
 			
-			bwe.write("Source;Target;Type;Degree;Category;ContigId\n");
+			bwe.write("Source;Target;Type;Degree;Category\n");
 			for (Edge e : graph.edges) {
 				bwe.write(e.n1.id + ';' + e.n2.id + ";Undirected;" + e.degree + ';' + (e.degree * 10 / avgDegree) + '\n');
 			}
