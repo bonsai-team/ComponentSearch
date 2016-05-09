@@ -9,8 +9,8 @@ Then run the command line:
   
 Options:  
 `-n <filename>` The path for the file containing the input nodes  
-`-e <filename>` The path for the file containing the input edges
-`-b <basename>` The basename for the output files
+`-e <filename>` The path for the file containing the input edges  
+`-b <basename>` The basename for the output files  
 `-N x` Set to x the compressed nodes filter parameter. The compressed nodes filter parameter is used 
 to delete compressed nodes containing only x or less input nodes.  
 `-E x` Set to x the compressed edges filter parameter. The compressed edges filter parameter is used 
