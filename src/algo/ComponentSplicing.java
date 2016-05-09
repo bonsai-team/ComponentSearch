@@ -5,22 +5,22 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-import graph.Contig;
-import graph.ContigGraph;
+import graph.Component;
+import graph.ComponentGraph;
 import graph.ContractedGraph;
 import graph.MetaNode;
 import graph.Node;
 
-public class ContigSplicing {
+public class ComponentSplicing {
 
 	private ContractedGraph contracted;
 
-	public ContigSplicing(ContractedGraph contracted) {
+	public ComponentSplicing(ContractedGraph contracted) {
 		this.contracted = contracted;
 	}
 	
-	public ContigGraph basicSplicing () {
-		ContigGraph contigs = new ContigGraph();
+	public ComponentGraph basicSplicing () {
+		ComponentGraph components = new ComponentGraph();
 		
 		Set<MetaNode> nodes = new HashSet<>();
 		nodes.addAll(this.contracted.nodes.values());
@@ -28,49 +28,49 @@ public class ContigSplicing {
 		// Nodes creation
 		while (!nodes.isEmpty()) {
 			MetaNode current = nodes.iterator().next();
-			Contig contig = new Contig();
+			Component component = new Component();
 			
 			// In case of hub
 			if (current.arity() > 2) {
 				nodes.remove(current);
 				
-				contig.addNode(current);
-				current.contigId = contig.idx;
-				contig.hub = true;
+				component.addNode(current);
+				current.componentId = component.idx;
+				component.hub = true;
 				
-				contigs.nodes.put(contig.id, contig);
-				this.indexMetaNode(current, contig, contigs);
+				components.nodes.put(component.id, component);
+				this.indexMetaNode(current, component, components);
 				continue;
 			}
 			
 			// Otherwise
-			contig.hub = false;
+			component.hub = false;
 			Queue<MetaNode> queue = new LinkedList<>();
 			queue.add(current);
 			while (!queue.isEmpty()) {
 				current = queue.poll();
 				nodes.remove(current);
-				contig.addNode(current);
-				this.indexMetaNode(current, contig, contigs);
-				current.contigId = contig.idx;
+				component.addNode(current);
+				this.indexMetaNode(current, component, components);
+				current.componentId = component.idx;
 				
 				for (Node nei : current.neighbors) {
 					if (nei.arity() <= 2 &&  nodes.contains(nei))
 						queue.add((MetaNode) nei);
 				}
 			}
-			contigs.nodes.put(contig.id, contig);
+			components.nodes.put(component.id, component);
 		}
 		
-		return contigs;
+		return components;
 	}
 	
-	public int enlargeContigs (ContigGraph cg) {
+	public int enlargeComponents (ComponentGraph cg) {
 		int nodesTransfered = 0;
 		
-		// Analysis each contig that is a hub
+		// Analysis each component that is a hub
 		for (MetaNode cmn : cg.nodes.values()) {
-			Contig cont = (Contig)cmn;
+			Component cont = (Component)cmn;
 			if (!cont.hub)
 				continue;
 		
@@ -106,15 +106,15 @@ public class ContigSplicing {
 				nodesTransfered += 1;
 				extMn.nodes.add(node);
 				mn.nodes.remove(node);
-				this.indexMetaNode(extMn, cg.contigIndex.get(extMn), cg);
+				this.indexMetaNode(extMn, cg.componentIndex.get(extMn), cg);
 			}
 		}
 		
 		return nodesTransfered;
 	}
 	
-	private void indexMetaNode (MetaNode node, Contig contig, ContigGraph graph) {
-		graph.contigIndex.put(node, contig);
+	private void indexMetaNode (MetaNode node, Component component, ComponentGraph graph) {
+		graph.componentIndex.put(node, component);
 		
 		for (Node n : node.nodes)
 			graph.contractedIndex.put(n, node);

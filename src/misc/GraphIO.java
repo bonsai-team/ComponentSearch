@@ -8,8 +8,8 @@ import java.io.IOException;
 import graph.BasicEdge;
 import graph.BasicGraph;
 import graph.BasicNode;
-import graph.Contig;
-import graph.ContigGraph;
+import graph.Component;
+import graph.ComponentGraph;
 import graph.Edge;
 import graph.Graph;
 import graph.MetaNode;
@@ -116,10 +116,10 @@ public class GraphIO {
 			// Nodes
 			BufferedWriter bwv = new BufferedWriter(new FileWriter(nodeFile));
 			
-			bwv.write("Id;Size;Specie;ContigId\n");
+			bwv.write("Id;Size;Specie;ComponentId\n");
 			for (Node n : graph.nodes.values()) {
 				MetaNode mn = (MetaNode)n;
-				bwv.write(n.id + ';' + mn.nodes.size() + ';' + mn.species + ';' + mn.contigId + '\n');
+				bwv.write(n.id + ';' + mn.nodes.size() + ';' + mn.species + ';' + mn.componentId + '\n');
 			}
 			
 			bwv.close();
@@ -144,13 +144,13 @@ public class GraphIO {
 		}
 	}
 	
-	public static void saveContigs (ContigGraph contigs, String filename) {
+	public static void saveComponents (ComponentGraph components, String filename) {
 		try {
 			BufferedWriter bwv = new BufferedWriter(new FileWriter(filename));
 			
-			bwv.write("Contig;Read;MetaNode\n");
-			for (MetaNode c : contigs.nodes.values()) {
-				Contig cont = (Contig)c;
+			bwv.write("Component;Read;MetaNode\n");
+			for (MetaNode c : components.nodes.values()) {
+				Component cont = (Component)c;
 				for (Node mn : cont.nodes) {
 					MetaNode meta = (MetaNode)mn;
 					for (Node node : meta.nodes)

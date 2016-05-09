@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.Map;
 
 import algo.BFS;
-import algo.ContigSplicing;
+import algo.ComponentSplicing;
 import algo.Contraction;
 import graph.BasicGraph;
-import graph.ContigGraph;
+import graph.ComponentGraph;
 import graph.ContractedGraph;
 import graph.Node;
 import misc.GraphIO;
@@ -21,7 +21,7 @@ public class Main {
 		String basename = "";
 		int nodeFilter = 0;
 		int edgeFilter = 0;
-		boolean optimizeContigs = false;
+		boolean optimizeComponents = false;
 		
 		/* --- Arguments parsing --- */
 		for (int idx=0 ; idx<args.length ; idx++) {
@@ -42,7 +42,7 @@ public class Main {
 				edgeFilter = new Integer(args[++idx]);
 				break;
 			case "-oc":
-				optimizeContigs = true;
+				optimizeComponents = true;
 				break;
 
 			default:
@@ -63,7 +63,7 @@ public class Main {
 		}
 		
 		Main main = new Main();
-		main.exec(nodesFile, edgesFile, basename, nodeFilter, edgeFilter, optimizeContigs);
+		main.exec(nodesFile, edgesFile, basename, nodeFilter, edgeFilter, optimizeComponents);
 	}
 	
 	public Main() {}
@@ -77,7 +77,7 @@ public class Main {
 		
 		String ctrVerticies = basename + ".nodes_contracted.csv";
 		String ctrEdges = basename + ".edges_contracted.csv";
-		String configFile = basename + ".contigs.csv";
+		String componentFile = basename + ".components.csv";
 		
 		System.out.println("--- Loading ---");
 		BasicGraph graph = GraphIO.load(verticies, edges);
@@ -106,23 +106,23 @@ public class Main {
 			System.out.println("Nb contracted edges: " + contracted.edges.size());
 		}
 		
-		System.out.println("--- Contigs splicings ---");
-		ContigSplicing cs = new ContigSplicing(contracted);
-		ContigGraph contigs = cs.basicSplicing();
-		System.out.println("Nb of contigs: " + contigs.nodes.size());
+		System.out.println("--- Components splicings ---");
+		ComponentSplicing cs = new ComponentSplicing(contracted);
+		ComponentGraph components = cs.basicSplicing();
+		System.out.println("Nb of components: " + components.nodes.size());
 		if (oc) {
 			int nbTransfered = 0;
 			int sum = 0;
 			do {
-				nbTransfered = cs.enlargeContigs(contigs);
+				nbTransfered = cs.enlargeComponents(components);
 				sum += nbTransfered;
 			} while (nbTransfered != 0);
-			System.out.println("Nb reads transfered from hubs to contigs: " + sum);
+			System.out.println("Nb reads transfered from hubs to components: " + sum);
 		}
 		
 		System.out.println("--- Save ---");
 		GraphIO.save(contracted, ctrVerticies, ctrEdges);/**/
-		GraphIO.saveContigs(contigs, configFile);
+		GraphIO.saveComponents(components, componentFile);
 	}
 
 }

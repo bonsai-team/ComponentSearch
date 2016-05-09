@@ -3,14 +3,14 @@ package graph;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContigGraph extends ContractedGraph {
+public class ComponentGraph extends ContractedGraph {
 
-	public Map<MetaNode, Contig> contigIndex;
+	public Map<MetaNode, Component> componentIndex;
 	public Map<Node, MetaNode> contractedIndex;
 	
-	public ContigGraph() {
+	public ComponentGraph() {
 		super();
-		this.contigIndex = new HashMap<>();
+		this.componentIndex = new HashMap<>();
 		this.contractedIndex = new HashMap<>();
 	}
 	

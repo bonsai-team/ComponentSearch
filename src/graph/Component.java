@@ -1,18 +1,18 @@
 package graph;
 
-public class Contig extends MetaNode {
+public class Component extends MetaNode {
 	
 	private static int nextIdx = 1;
 	
 	public int idx;
 	public boolean hub;
 
-	public Contig() {
+	public Component() {
 		super();
 		this.idx = nextIdx++;
 	}
 	
-	public Contig(MetaNode node) {
+	public Component(MetaNode node) {
 		super(node);
 		this.idx = nextIdx++;
 	}

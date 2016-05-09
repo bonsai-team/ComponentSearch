@@ -6,6 +6,6 @@ fi
 mkdir compilation
 
 javac src/**/*.java -d compilation
-jar cf ContigSearch.jar -C compilation/ .
+jar cf ComponentSearch.jar -C compilation/ .
 
 rm -rf compilation

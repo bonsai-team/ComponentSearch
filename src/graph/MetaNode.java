@@ -8,12 +8,12 @@ public class MetaNode extends Node {
 	private static int nextId = 0;
 	
 	public Set<Node> nodes;
-	public int contigId;
+	public int componentId;
 
 	public MetaNode() {
 		super("_meta_" + nextId++, "?");
 		this.nodes = new HashSet<>();
-		this.contigId = -1;
+		this.componentId = -1;
 	}
 	
 	public MetaNode(Node n) {
