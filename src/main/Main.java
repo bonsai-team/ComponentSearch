@@ -79,6 +79,7 @@ public class Main {
 		String ctrEdges = basename + ".edges_contracted.csv";
 		String componentFile = basename + ".components.csv";
 		
+        System.out.println();
 		System.out.println("--- Loading ---");
 		BasicGraph graph = GraphIO.load(verticies, edges);
 		System.out.println("Nb nodes: " + graph.nodes.size());
@@ -123,6 +124,7 @@ public class Main {
 		System.out.println("--- Save ---");
 		GraphIO.save(contracted, ctrVerticies, ctrEdges);/**/
 		GraphIO.saveComponents(components, componentFile);
+        System.out.println();
 	}
 
 }
