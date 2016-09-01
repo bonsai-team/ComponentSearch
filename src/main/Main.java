@@ -11,18 +11,19 @@ import graph.ComponentGraph;
 import graph.ContractedGraph;
 import graph.Node;
 import misc.GraphIO;
+import java.util.*;
 
 public class Main {
 
 	public static void main(String[] args) {
-		
+
 		String nodesFile = "nodes.csv";
 		String edgesFile = "edges.csv";
 		String basename = "";
 		int nodeFilter = 0;
 		int edgeFilter = 0;
 		boolean optimizeComponents = false;
-		
+
 		/* --- Arguments parsing --- */
 		for (int idx=0 ; idx<args.length ; idx++) {
 			switch (args[idx]) {
@@ -49,7 +50,7 @@ public class Main {
 				break;
 			}
 		}
-		
+
 		/* Tests for files */
 		File nf = new File(nodesFile);
 		if (!nf.exists()) {
@@ -61,43 +62,47 @@ public class Main {
 			System.err.println(edgesFile + " don't exist");
 			System.exit(1);
 		}
-		
+
 		Main main = new Main();
 		main.exec(nodesFile, edgesFile, basename, nodeFilter, edgeFilter, optimizeComponents);
 	}
-	
+
 	public Main() {}
-	
+
 	public void exec (String verticies, String edges, String basename, int nodeFilter, int edgeFilter, boolean oc) {
-		
+
 		if (basename.equals("")) {
 			String tmp = verticies.substring(0, verticies.lastIndexOf('.'));
 			basename = tmp.substring(0, tmp.lastIndexOf('.'));
 		}
-		
+
 		String ctrVerticies = basename + ".nodes_contracted.csv";
 		String ctrEdges = basename + ".edges_contracted.csv";
 		String componentFile = basename + ".components.csv";
-		
-        System.out.println();
+
+		System.out.println();
 		System.out.println("--- Loading ---");
 		BasicGraph graph = GraphIO.load(verticies, edges);
 		System.out.println("Nb nodes: " + graph.nodes.size());
 		System.out.println("Nb edges: " + graph.edges.size());
-		
+
 		ContractedGraph contracted = null;
 		System.out.println("--- Contraction ---");
-		Map<Node, Integer> annotations = BFS.search(graph, graph.nodes.values().iterator().next());
+		List<Node> nodes = new ArrayList(graph.nodes.values());
+		Random rand = new Random();
+		//~ Map<Node, Integer> annotations = BFS.search(graph, graph.nodes.values().iterator().next());
+		//~ Map<Node, Integer> annotations = BFS.search(graph, nodes.get(0));
+		Map<Node, Integer> annotations = BFS.search(graph, nodes.get(rand.nextInt(nodes.size())));
 		System.out.println("Nb annotations : " + annotations.size());
 		contracted = Contraction.contract(annotations, graph);
 		System.out.println("Nb contracted nodes: " + contracted.nodes.size());
 		System.out.println("Nb contracted edges: " + contracted.edges.size());
-		
+
 		System.out.println("--- Absorb fingers ---");
 		Contraction.absorbFingers(contracted);
 		System.out.println("Nb contracted nodes: " + contracted.nodes.size());
 		System.out.println("Nb contracted edges: " + contracted.edges.size());
-		
+
 		if (nodeFilter != 0 || edgeFilter != 0) {
 			System.out.println("--- Filter small nodes and weak edges ---");
 			Contraction.filterNodes(nodeFilter, contracted);
@@ -106,7 +111,7 @@ public class Main {
 			System.out.println("Nb contracted nodes: " + contracted.nodes.size());
 			System.out.println("Nb contracted edges: " + contracted.edges.size());
 		}
-		
+
 		System.out.println("--- Components splicings ---");
 		ComponentSplicing cs = new ComponentSplicing(contracted);
 		ComponentGraph components = cs.basicSplicing();
@@ -120,11 +125,11 @@ public class Main {
 			} while (nbTransfered != 0);
 			System.out.println("Nb reads transfered from hubs to components: " + sum);
 		}
-		
+
 		System.out.println("--- Save ---");
 		GraphIO.save(contracted, ctrVerticies, ctrEdges);/**/
 		GraphIO.saveComponents(components, componentFile);
-        System.out.println();
+		System.out.println();
 	}
 
 }
