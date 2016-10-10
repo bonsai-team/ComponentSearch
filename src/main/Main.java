@@ -2,6 +2,8 @@ package main;
 
 import java.io.File;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 import algo.BFS;
 import algo.ComponentSplicing;
@@ -11,7 +13,7 @@ import graph.ComponentGraph;
 import graph.ContractedGraph;
 import graph.Node;
 import misc.GraphIO;
-import java.util.*;
+import java.util.Random;
 
 public class Main {
 

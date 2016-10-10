@@ -19,19 +19,19 @@ public class GraphIO {
 
 	public static BasicGraph load (String verticiesFile, String edgesFile) {
 		BasicGraph graph = new BasicGraph();
-		
+
 		try {
 			BufferedReader vbr = new BufferedReader(new FileReader(verticiesFile));
 			GraphIO.parseVerticies (vbr, graph);
 			vbr.close();
-			
+
 			BufferedReader ebr = new BufferedReader(new FileReader(edgesFile));
 			GraphIO.parseEdges (ebr, graph);
 			ebr.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return graph;
 	}
 
@@ -41,7 +41,7 @@ public class GraphIO {
 			System.err.println("The node file must contain an \"Id\" column.");
 			System.exit(1);
 		}
-		
+
 		String[] vTitles = titles.split(";");
 		int vid = 0, /*vLabel, */vSpecies = 0;
 		for (int idx=0 ; idx<vTitles.length ; idx++) {
@@ -57,13 +57,13 @@ public class GraphIO {
 				break;
 			}
 		}
-		
+
 		String line = null;
 		while ((line = vbr.readLine()) != null) {
 			String[] split = line.split(";");
 			if (split.length != vTitles.length)
 				continue;
-			
+
 			BasicNode n = null;
 			if (vSpecies != 0)
 				n = new BasicNode(split[vid], split[vSpecies]);
@@ -72,14 +72,14 @@ public class GraphIO {
 			graph.nodes.put(n.id, n);
 		}
 	}
-	
+
 	private static void parseEdges(BufferedReader ebr, BasicGraph graph) throws IOException {
 		String titles = ebr.readLine();
 		if (!titles.contains("Source") || !titles.contains("Target")) {
 			System.err.println("The edge file must contain a \"Source\" and a \"Target\" columns.");
 			System.exit(1);
 		}
-		
+
 		String[] vTitles = titles.split(";");
 		int source = 0, target = 0;
 		for (int idx=0 ; idx<vTitles.length ; idx++) {
@@ -95,13 +95,13 @@ public class GraphIO {
 				break;
 			}
 		}
-		
+
 		String line = null;
 		while ((line = ebr.readLine()) != null) {
 			String[] split = line.split(";");
 			if (split.length != vTitles.length)
 				continue;
-			
+
 			Node s = graph.nodes.get(split[source]);
 			Node t = graph.nodes.get(split[target]);
 			s.neighbors.add(t);
@@ -110,12 +110,12 @@ public class GraphIO {
 			graph.edges.add(e);
 		}
 	}
-	
+
 	public static void save (Graph<? extends Node, ? extends Edge> graph, String nodeFile, String edgeFile) {
 		try {
 			// Nodes
 			BufferedWriter bwv = new BufferedWriter(new FileWriter(nodeFile));
-			
+
 			bwv.write("Id;Size;Specie;ComponentId\n");
 			//~ bwv.write("Id;Size;ComponentId\n");
 			for (Node n : graph.nodes.values()) {
@@ -123,33 +123,40 @@ public class GraphIO {
 				bwv.write(n.id + ';' + mn.nodes.size() + ';' + mn.species + ';' + mn.componentId + '\n');
 				//~ bwv.write(n.id + ';' + mn.nodes.size() + ';' + mn.componentId + '\n');
 			}
-			
+
 			bwv.close();
-			
+
 			// Edges
 			BufferedWriter bwe = new BufferedWriter(new FileWriter(edgeFile));
-			
+
 			// Max degree for normalization
 			int avgDegree = 0;
-			for (Edge e : graph.edges)
-				avgDegree += e.degree;
-			avgDegree /= graph.edges.size();
-			
+			if (graph.edges.size() > 0) {
+				for (Edge e : graph.edges)
+					avgDegree += e.degree;
+				avgDegree /= graph.edges.size();
+			}
+
 			bwe.write("Source;Target;Type;Degree;Category\n");
 			for (Edge e : graph.edges) {
-				bwe.write(e.n1.id + ';' + e.n2.id + ";Undirected;" + e.degree + ';' + (e.degree * 10 / avgDegree) + '\n');
+				bwe.write(e.n1.id + ';' + e.n2.id + ";Undirected;" + e.degree + ';');
+				if (avgDegree != 0)
+					bwe.write(e.degree * 10 / avgDegree);
+				else
+					bwe.write("NA");
+				bwe.write('\n');
 			}
-			
+
 			bwe.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void saveComponents (ComponentGraph components, String filename) {
 		try {
 			BufferedWriter bwv = new BufferedWriter(new FileWriter(filename));
-			
+
 			bwv.write("Component;Read;MetaNode\n");
 			for (MetaNode c : components.nodes.values()) {
 				Component cont = (Component)c;
@@ -159,11 +166,11 @@ public class GraphIO {
 						bwv.write("" + cont.idx + ';' + node.id + ';' + meta.id + '\n');
 				}
 			}
-			
+
 			bwv.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
